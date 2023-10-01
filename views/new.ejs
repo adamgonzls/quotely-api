@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quotely API</title>
+  </head>
+  <body>
+    <form action="/quotes" method="POST">
+      <label for="quote">Quote text:</label>
+      <input
+        type="text"
+        id="quote"
+        name="quote"
+        placeholder="My dear Watson"
+        value=""
+      />
+      <label for="author">Quote author:</label>
+      <input
+        type="text"
+        id="author"
+        name="author"
+        placeholder="Sherlock Holmes"
+        value=""
+      />
+      <label for="profession">Author profession:</label>
+      <input
+        type="text"
+        id="profession"
+        name="profession"
+        placeholder="Detective"
+        value=""
+      />
+      <button>Submit</button>
+    </form>
+  </body>
+</html>

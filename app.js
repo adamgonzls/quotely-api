@@ -2,7 +2,9 @@ const express = require('express')
 const app = express()
 const mongoose = require('mongoose')
 const PORT = process.env.PORT || 3000
+const path = require('path')
 const Quote = require('./models/quote')
+const methodOverride = require('method-override')
 
 mongoose
   .connect('mongodb://127.0.0.1:27017/quotely-api')
@@ -14,28 +16,34 @@ mongoose
     console.log(err)
   })
 
+app.set('view engine', 'ejs')
+app.set('views', path.join(__dirname, 'views'))
+app.use(methodOverride('_method'))
+app.use(express.urlencoded({ extended: true }))
+
 app.get('/', (req, res) => {
   res.send('hi this is the home page')
 })
 
 app.get('/quotes', async (req, res) => {
   const quotes = await Quote.find()
-  res.send(quotes)
-  // res.send('quotes here')
+  res.json(quotes)
 })
 
 app.get('/quotes/new', (req, res) => {
-  res.send('new quote form')
+  res.render('new')
 })
 
-app.get('/quotes/:id', (req, res) => {
+app.get('/quotes/:id', async (req, res) => {
   const { id } = req.params
-  res.send(`view quote ${id} here`)
+  const quote = await Quote.findById(id)
+  res.json(quote)
 })
 
-app.get('/quotes/:id/edit', (req, res) => {
+app.get('/quotes/:id/edit', async (req, res) => {
   const { id } = req.params
-  res.send('show edit form')
+  const quote = await Quote.findById(id)
+  res.render('show edit form', { quote })
 })
 
 app.put('/quotes', (req, res) => {
@@ -43,14 +51,9 @@ app.put('/quotes', (req, res) => {
 })
 
 app.post('/quotes', async (req, res) => {
-  const newQuote = new Quote({
-    author: 'Adam',
-    quote: 'Hey how are ya',
-    profession: 'Web Developer',
-  })
-  await newQuote.save()
-  res.redirect(`/quotes/${newCampground._id}`)
-  // res.send('Process the new quote data')
+  const quote = new Quote(req.body)
+  await quote.save()
+  res.redirect(`/quotes/${quote._id}`)
 })
 
 // async function addItem() {
