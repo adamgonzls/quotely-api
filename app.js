@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 3000
 const path = require('path')
 const Quote = require('./models/quote')
 const methodOverride = require('method-override')
+const quote = require('./models/quote')
 
 mongoose
   .connect('mongodb://127.0.0.1:27017/quotely-api')
@@ -43,17 +44,26 @@ app.get('/quotes/:id', async (req, res) => {
 app.get('/quotes/:id/edit', async (req, res) => {
   const { id } = req.params
   const quote = await Quote.findById(id)
-  res.render('show edit form', { quote })
+  res.render('edit', { quote })
 })
 
-app.put('/quotes', (req, res) => {
-  res.send('Process the edited data')
+app.put('/quotes/:id', async (req, res) => {
+  const quote = await Quote.findByIdAndUpdate(req.params.id, {
+    ...req.body,
+  })
+  res.redirect(`/quotes/${quote._id}`)
 })
 
 app.post('/quotes', async (req, res) => {
   const quote = new Quote(req.body)
   await quote.save()
   res.redirect(`/quotes/${quote._id}`)
+})
+
+app.delete('/quotes/:id', async (req, res) => {
+  await Quote.findByIdAndDelete(req.params.id)
+  const quotes = await Quote.find()
+  res.json(quotes)
 })
 
 // async function addItem() {
